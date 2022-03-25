@@ -76,7 +76,7 @@ class TAQCleaner(object):
                             self.dataReader.getMillisFromMidn(i)))
                 )
     ## cleaning data based on given parameters
-    def processTimestamps(self, K=21, gamma_multiplier = 0.00005):
+    def cleaningData(self, K=21, gamma_multiplier = 0.00005):
         if self.prices is None:
             raise ValueError('prices need to be processed first.')
 
@@ -104,7 +104,7 @@ class TAQCleaner(object):
                     gamma_multiplier * _mean:
                 self.outlierIdx.append(i)
 
-    def processTimestamps(self):
+    def getRawTradesDataFrame(self):
         if self.type=='quote':
             raise ValueError('Trades not available')
         if self.prices is None or self.tsList is None:
@@ -114,7 +114,7 @@ class TAQCleaner(object):
                         'Time':self.tsList})
         return self.rawTradesDF
 
-    def processTimestamps(self):
+    def getCleanedTradesDataFrame(self):
         if self.type=='quote':
             raise ValueError('Trades not available')
 
@@ -394,6 +394,7 @@ def main(workingDir, K=21, gamma_multiplier=0.00005, target_Ticker = None):
         trade_params = [i for i in trade_params if target_Ticker in i[0]]
         quote_params = [j for j in quote_params if target_Ticker in j[0]]
 
+    print(trade_params[0])
     pbar1 = tqdm(total = len(trade_params))
     pbar1.set_description('trade cleaning')
     update1 = lambda *args : pbar1.update()
@@ -413,6 +414,6 @@ def main(workingDir, K=21, gamma_multiplier=0.00005, target_Ticker = None):
 if __name__ == '__main__':
     workingDir = '/Users/barry/Desktop/NYU Courses/courseSpring2022/algo trading/hw1'
     start = time.time()
-    targetTicker = 'AAPL'
-    main(K=21, gamma_multiplier=0.00005, target_Ticker = targetTicker)
+    targetTicker = None
+    main(workingDir, K=21, gamma_multiplier=0.00005, target_Ticker = targetTicker)
     print('Finished all, time consumed {}'.format(time.time()-start))
