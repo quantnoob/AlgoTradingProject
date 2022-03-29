@@ -26,7 +26,7 @@ class TAQQuotesReader(object):
             
             # bid size
             endI = endI + ( 4 * self._header[1] )
-            self._bs = struct.unpack_from( ( ">%df" % self._header[ 1 ] ), file_content[ startI:endI ] )
+            self._bs = struct.unpack_from( ( ">%di" % self._header[ 1 ] ), file_content[ startI:endI ] )
             startI = endI
 
             # bid price
@@ -36,7 +36,7 @@ class TAQQuotesReader(object):
             
             # ask size
             endI = endI + ( 4 * self._header[1] )
-            self._as = struct.unpack_from( ( ">%df" % self._header[ 1 ] ), file_content[ startI:endI ] )
+            self._as = struct.unpack_from( ( ">%di" % self._header[ 1 ] ), file_content[ startI:endI ] )
             startI = endI
 
             # ask price
@@ -68,9 +68,9 @@ class TAQQuotesReader(object):
         out = gzip.open( filePathName, "wb" )
         out.write(struct.pack(">2i",self.getSecsFromEpocToMidn(), len(ts)))
         out.write(struct.pack(">%di" % len(ts), *ts))
-        out.write(struct.pack(">%df" % len(bidSize), *bidSize))
+        out.write(struct.pack(">%di" % len(bidSize), *bidSize))
         out.write(struct.pack(">%df" % len(bidPrice), *bidPrice))
-        out.write(struct.pack(">%df" % len(askSize), *askSize))
+        out.write(struct.pack(">%di" % len(askSize), *askSize))
         out.write(struct.pack(">%df" % len(askPrice), *askPrice))
         out.close()
         
@@ -90,8 +90,8 @@ class TAQQuotesReader(object):
             as_list.append(int(self.getAskSize(i) * adj_s))
             ap_list.append(self.getAskPrice(i) / adj_p)
         out.write(struct.pack(">%di" % header[1], *ts_list))
-        out.write(struct.pack(">%df" % header[1], *bs_list))
+        out.write(struct.pack(">%di" % header[1], *bs_list))
         out.write(struct.pack(">%df" % header[1], *bp_list))
-        out.write(struct.pack(">%df" % header[1], *as_list))
+        out.write(struct.pack(">%di" % header[1], *as_list))
         out.write(struct.pack(">%df" % header[1], *ap_list))
         out.close()

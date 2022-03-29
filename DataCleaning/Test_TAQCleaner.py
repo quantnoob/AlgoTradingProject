@@ -16,7 +16,7 @@ def generate_fake_data(workingDir,type = None):
         ## seconds to epoch, number of data samples
         header = [1182312000, len(prices)]
         ## sized
-        sizes = [i*10 for i in range(len(prices))]
+        sizes = [int((i+0.01)*10) for i in range(len(prices))]
         ##ts
         ts = [3420000 + i*1000 for i in range(len(prices))]
         tradeFilePath = os.path.join(workingDir,'trade_SP_Adj','20070620')
@@ -26,7 +26,7 @@ def generate_fake_data(workingDir,type = None):
         out = gzip.open(tradeDataPath,"wb")
         out.write(struct.pack(">2i",header[0], header[1]))
         out.write(struct.pack(">%di" % len(ts), *ts))
-        out.write(struct.pack(">%df" % len(sizes), *sizes))
+        out.write(struct.pack(">%di" % len(sizes), *sizes))
         out.write(struct.pack(">%df" % len(prices), *prices))
         out.close()
         return
@@ -48,9 +48,9 @@ def generate_fake_data(workingDir,type = None):
         out = gzip.open(quoteDataPath,"wb")
         out.write(struct.pack(">2i",header[0], header[1]))
         out.write(struct.pack(">%di" % len(ts), *ts))
-        out.write(struct.pack(">%df" % len(bid_sizes), *bid_sizes))
+        out.write(struct.pack(">%di" % len(bid_sizes), *bid_sizes))
         out.write(struct.pack(">%df" % len(bid_prices), *bid_prices))
-        out.write(struct.pack(">%df" % len(ask_prices), *ask_sizes))
+        out.write(struct.pack(">%di" % len(ask_prices), *ask_sizes))
         out.write(struct.pack(">%df" % len(ask_prices), *ask_prices))
         out.close()
         return
@@ -97,6 +97,7 @@ class Test_TAQCleaner(unittest.TestCase):
         self.assertEquals(trade_cleaner.getPrices()[-1], 1.0)
         self.assertEquals(trade_cleaner.dataReader._ts[0], 3420000)
         self.assertEquals(trade_cleaner.outlierIdx[0], prices.index(999))
+        self.assertEquals(trade_cleaner.dataReader.getSize(0), 0)
 
         ## the quote cleaner return mid price
         self.assertEquals(quote_cleaner.getPrices()[-1], (bid_prices[-1] + ask_prices[-1])/2)
@@ -104,6 +105,7 @@ class Test_TAQCleaner(unittest.TestCase):
         self.assertAlmostEquals(quote_cleaner.getBidPrices()[-1], 0.9)
         self.assertEquals(quote_cleaner.dataReader._ts[0], 3420000)
         self.assertEquals(quote_cleaner.outlierIdx[0], prices.index(999))
+
 
         trade_cleaner.plotCleaningTradesResultGraph()
         quote_cleaner.plotCleaningQuotesResultGraph()

@@ -5,7 +5,8 @@ class Test_TAQQuotesReader(unittest.TestCase):
 
     def test1(self):
 
-        reader = TAQQuotesReader( '/Users/lee/Documents/taq/quotes/20070620/IBM_quotes.binRQ' )
+        reader = TAQQuotesReader( '/Users/barry/Desktop/NYU Courses/courseSpring2022/Algo trading/hw1/Dataset'+\
+        '/quote/20070620/IBM_quotes.binRQ' )
         
         # Using previously tested readers, test for expected values
         
