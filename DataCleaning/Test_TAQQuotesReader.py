@@ -15,7 +15,6 @@ class Test_TAQQuotesReader(unittest.TestCase):
         self.assertEquals( reader.getN(), 68489 )
         # Seconds from Epoc
         self.assertEquals( reader.getSecsFromEpocToMidn(), 1182312000 )
-        
         # End records
         self.assertEquals( reader.getMillisFromMidn( reader.getN() - 1 ), 57599000 )
         self.assertEquals( reader.getBidSize( reader.getN() - 1 ), 20 )

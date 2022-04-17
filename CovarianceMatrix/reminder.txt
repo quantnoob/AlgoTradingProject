@@ -1,0 +1,8 @@
+
+# file with unexpected quotes behavior
+
+/Users/barry/Desktop/NYU Courses/courseSpring2022/algo trading/hw1/DataSet/quote_SP_Adj/20070703/SUNW_quotes.binRQ'
+
+SUNW is the same company with JAVA
+
+MXM miss a lot of values

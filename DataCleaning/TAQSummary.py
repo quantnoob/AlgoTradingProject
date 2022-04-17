@@ -109,7 +109,7 @@ class TAQSummary(object):
 
     ## compute summary statistics based on returns calcualted from each individual Ticker,
     ## on individual dates
-    def computeStatForAllDatesWithFreq(self, ifCleaned = False, K=None, gamma_multiplier = None):
+    def computeStatForAllDatesWithFreq(self, ifCleaned = False, K=None, gamma_multiplier = None, progress_bar = True):
         X = self.X
         ## compute returns of given ticker with all other statistics
         ## calculate the how period, ignoring the timestamp
@@ -119,35 +119,56 @@ class TAQSummary(object):
         self.trade_nums = 0 
         self.quote_returns = []
         self.quote_nums = 0
+        if progress_bar:
+            pbarTrade = tqdm(total=len(self.tradeFileList))
+            pbarTrade.set_description('processing trade stat')
+            pbarQuote = tqdm(total=len(self.quoteFileList))
+            pbarQuote.set_description('processing quote stat')
 
-        pbarTrade = tqdm(total=len(self.tradeFileList))
-        pbarTrade.set_description('processing trade stat')
-        pbarQuote = tqdm(total=len(self.quoteFileList))
-        pbarQuote.set_description('processing quote stat')
+            def updateTrade(x):
+                self.trade_returns.append(x[0])
+                self.trade_nums += x[1]
+                pbarTrade.update()
 
-        def updateTrade(x):
-            self.trade_returns.append(x[0])
-            self.trade_nums += x[1]
-            pbarTrade.update()
+            def updateQuote(x):
+                self.quote_returns.append(x[0])
+                self.quote_nums += x[1]
+                pbarQuote.update()
 
-        def updateQuote(x):
-            self.quote_returns.append(x[0])
-            self.quote_nums += x[1]
-            pbarQuote.update()
+            n_core = 10
+            pool1 = mp.Pool(n_core)
+            pool2 = mp.Pool(n_core)
+            
+            for _param1, _param2 in zip(self.tradeFileList, self.quoteFileList):
+                pool1.apply_async(self.computeStatWithFreq,
+                                args=(_param1,'trade'),callback=updateTrade)
+                pool2.apply_async(self.computeStatWithFreq,
+                                args=(_param2,'quote'),callback=updateQuote)
+            pool1.close()
+            pool1.join()
+            pool2.close()
+            pool2.join()
+        else:
+            def updateTrade(x):
+                self.trade_returns.append(x[0])
+                self.trade_nums += x[1]
 
-        n_core = 10
-        pool1 = mp.Pool(n_core)
-        pool2 = mp.Pool(n_core)
-        
-        for _param1, _param2 in zip(self.tradeFileList, self.quoteFileList):
-            pool1.apply_async(self.computeStatWithFreq,
-                             args=(_param1,'trade'),callback=updateTrade)
-            pool2.apply_async(self.computeStatWithFreq,
-                             args=(_param2,'quote'),callback=updateQuote)
-        pool1.close()
-        pool1.join()
-        pool2.close()
-        pool2.join()
+            def updateQuote(x):
+                self.quote_returns.append(x[0])
+                self.quote_nums += x[1]
+
+            n_core = 10
+            pool1 = mp.Pool(n_core)
+            pool2 = mp.Pool(n_core)
+            for _param1, _param2 in zip(self.tradeFileList, self.quoteFileList):
+                pool1.apply_async(self.computeStatWithFreq,
+                                args=(_param1,'trade'), callback=updateTrade)
+                pool2.apply_async(self.computeStatWithFreq,
+                                args=(_param2,'quote'),callback=updateQuote)
+            pool1.close()
+            pool1.join()
+            pool2.close()
+            pool2.join()
 
     ## summary all the data computed so far
     def computeSummary(self):
@@ -204,7 +225,7 @@ class TAQSummary(object):
 
 if __name__ == '__main__':
     workingDir = '/Users/barry/Desktop/NYU Courses/courseSpring2022/algo trading/hw1/DataSet/'
-    Ticker = 'APPL'
+    Ticker = 'AAPL'
     taqS = TAQSummary(Ticker, workingDir, freq=10)
     taqS.computeStatForAllDatesWithFreq(ifCleaned=True)
     print(taqS.computeSummary())

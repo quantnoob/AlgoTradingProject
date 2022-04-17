@@ -1,6 +1,5 @@
 from TAQTradesReader import TAQTradesReader as tr
 from TAQQuotesReader import TAQQuotesReader as qr
-from pathos import multiprocessing as mp
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 

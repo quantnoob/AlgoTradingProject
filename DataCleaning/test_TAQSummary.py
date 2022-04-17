@@ -109,10 +109,10 @@ class Test_TAQSummary(unittest.TestCase):
         testDirtyQuoteStat = taqSummary2.quotesStat[:6]
 
         for i in range(6):
-            self.assertAlmostEquals(cleanTradeStat[i],testCleanTradeStat[i])
-            self.assertAlmostEquals(cleanQuoteStat[i],testCleanQuoteStat[i])
-            self.assertAlmostEquals(dirtyTradeStat[i],testDirtyTradeStat[i])
-            self.assertAlmostEquals(dirtyQuoteStat[i],testDirtyQuoteStat[i])
+            self.assertAlmostEquals(cleanTradeStat[i],testCleanTradeStat[i],5)
+            self.assertAlmostEquals(cleanQuoteStat[i],testCleanQuoteStat[i],5)
+            self.assertAlmostEquals(dirtyTradeStat[i],testDirtyTradeStat[i],5)
+            self.assertAlmostEquals(dirtyQuoteStat[i],testDirtyQuoteStat[i],5)
         
 
 
